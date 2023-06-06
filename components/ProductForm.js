@@ -18,7 +18,7 @@ export default function ProductForm({
   
   async function saveProduct(ev) {
     ev.preventDefault();
-    const dataProducts = { title, description, price };
+    const dataProducts = { title, description, price, images };
     if (_id) {
       // update
       await axios.put("/api/products", { ...dataProducts, _id });
@@ -40,11 +40,10 @@ export default function ProductForm({
       for (const file of files) {
         data.append("file", file);
       }
-      const res =await axios.post("/api/upload", data);
-      setImages(oldImages =>{
-        return [...oldImages, ...res.data.links];
+      const res = await axios.post("/api/upload", data);
+      setImages(oldImages => {
+        return [...oldImages, ...res.data.links.map(link => link)];
       });
-
     }
   }
   return (
@@ -57,10 +56,10 @@ export default function ProductForm({
         onChange={(ev) => setTitle(ev.target.value)}
       />
       <label>Photos</label>
-      <div className="mb-2">
+      <div className="mb-2 flex flex-wrap gap-2">
         {!!images?.length && images.map(links => (
-          <div key={links}>
-            {links}
+          <div key={links} className=" h-24">
+            <img src={links} alt="" className="rounded-lg"/>
             </div>
         ))}
         <label className="  cursor-pointer w-24 h-24  text-center flex flex-col items-center justify-center text-sm gap-1 text-gray-500 rounded-lg bg-gray-200">
