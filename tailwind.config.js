@@ -19,6 +19,7 @@ module.exports = {
         "& tr td": "px-4 py-1",
         "& a": "px-4 rounded-sm inline-flex mx-1 items-center gap-1 text-sm py-1",
       },
+      
       colors: {
         primary: '#5542F6',
         highlight: '#eae8fb',
