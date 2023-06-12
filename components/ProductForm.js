@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 import { ReactSortable } from "react-sortablejs";
 
@@ -10,18 +10,37 @@ export default function ProductForm({
   description: existingDescription,
   price: existingPrice,
   images: existingImages,
+  category: assignedCategory,
 }) {
   const [title, setTitle] = useState(existingTitle || "");
   const [description, setDescription] = useState(existingDescription || "");
   const [price, setPrice] = useState(existingPrice || "");
+  const [category, setCategory] = useState(assignedCategory || "");
   const [images, setImages] = useState(existingImages || []);
   const [goToProducts, setGoToProducts] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    axios.get('/api/categories').then(result => {
+      setCategories(result.data);
+    })
+  }, []);
+
+  useEffect(() => {
+    setCategory(assignedCategory || "");
+  }, [assignedCategory]);
+
+  useEffect(() => {
+    if (goToProducts) {
+      router.push("/products");
+    }
+  }, [goToProducts]);
 
   async function saveProduct(ev) {
     ev.preventDefault();
-    const dataProducts = { title, description, price, images };
+    const dataProducts = { title, description, price, images, category: category || null };
     if (_id) {
       // update
       await axios.put("/api/products", { ...dataProducts, _id });
@@ -52,8 +71,7 @@ export default function ProductForm({
     }
   }
 
-
-  function updateImagesOrder(images){
+  function updateImagesOrder(images) {
     setImages(images);
   }
 
@@ -66,20 +84,33 @@ export default function ProductForm({
         value={title}
         onChange={(ev) => setTitle(ev.target.value)}
       />
+      <label>Category</label>
+      <select
+        value={category}
+        onChange={(ev) => setCategory(ev.target.value)}
+      >
+        <option value="">Uncategorized</option>
+        {categories.length > 0 &&
+          categories.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name}
+            </option>
+          ))}
+      </select>
       <label>Photos</label>
       <div className="mb-2 flex flex-wrap gap-1">
-        <ReactSortable 
-        className="flex flex-wrap gap-1"
-        list={images} 
-        setList={updateImagesOrder
-        }>
-        {!!images?.length &&
-          images.map((link) => (
-            <div key={link} className="h-24">
-              <img src={link} alt="" className="rounded-lg" />
-            </div>
-          ))}
-          </ReactSortable>
+        <ReactSortable
+          className="flex flex-wrap gap-1"
+          list={images}
+          setList={updateImagesOrder}
+        >
+          {!!images?.length &&
+            images.map((link) => (
+              <div key={link} className="h-24">
+                <img src={link} alt="" className="rounded-lg" />
+              </div>
+            ))}
+        </ReactSortable>
         {isUploading && (
           <div className="p-1 h-24 flex items-center">
             <Spinner />

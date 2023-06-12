@@ -10,14 +10,15 @@ export default async function handle(req,res) {
 
     }
 
-    if(method === "POST"){
-        const {name, parentCategory} = req.body;
-        const CategoryDoc = await Category.create({
-            name,
-            parent: parentCategory
-        });
-        res.json(CategoryDoc);
-    }
+    if (method === "POST") {
+        const { name, parentCategory, _id } = req.body;
+        const categoryData = { name };
+        if (parentCategory) {
+          categoryData.parent = parentCategory;
+        }
+        const categoryDoc = await Category.create(categoryData);
+        res.json(categoryDoc);
+      }
 
     if(method === "PUT"){
         const {name, parentCategory} = req.body;
@@ -28,4 +29,9 @@ export default async function handle(req,res) {
         res.json(CategoryDoc);
     }
     
+    if(method === "DELETE"){
+        const {_id} = req.query;
+       await Category.deleteOne({_id});
+       res.json('ok')
+    }
 };
