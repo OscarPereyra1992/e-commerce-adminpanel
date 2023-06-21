@@ -19,7 +19,7 @@
     "mongoose": "^7.2.2",
     "multiparty": "^4.2.3",
     "next": "13.4.4",
-    "next-auth": "^4.22.1",
+    "next-auth": "^4.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-sortablejs": "^6.1.4",

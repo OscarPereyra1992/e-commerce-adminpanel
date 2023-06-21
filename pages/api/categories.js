@@ -1,5 +1,5 @@
 import { mongooseConnect } from "@/lib/mongoose";
-import { Category } from "@/models/Category";
+import { Category } from "../../models/Category";
 
 export default async function handle(req,res) {
     const {method} = req;
@@ -11,23 +11,24 @@ export default async function handle(req,res) {
     }
 
     if (method === "POST") {
-        const { name, parentCategory, _id } = req.body;
-        const categoryData = { name };
-        if (parentCategory) {
-          categoryData.parent = parentCategory;
-        }
-        const categoryDoc = await Category.create(categoryData);
+        const { name, parentCategory,properties, _id } = req.body;
+        const categoryDoc = await Category.create({
+            name,
+            parent: parentCategory || null,
+            properties,
+        });
+        res.json(categoryDoc);
+    }
+
+    if (method === "PUT") {
+        const { name, parentCategory, properties, _id } = req.body;
+        const categoryDoc = await Category.findByIdAndUpdate(_id, {
+          name,
+          parent: parentCategory || undefined,
+          properties,
+        });
         res.json(categoryDoc);
       }
-
-    if(method === "PUT"){
-        const {name, parentCategory} = req.body;
-        const CategoryDoc = await Category.updateOne({
-            name,
-            parent: parentCategory
-        });
-        res.json(CategoryDoc);
-    }
     
     if(method === "DELETE"){
         const {_id} = req.query;
