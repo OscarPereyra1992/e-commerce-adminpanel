@@ -16,7 +16,7 @@ export default function ProductForm({
   const [title,setTitle] = useState(existingTitle || '');
   const [description,setDescription] = useState(existingDescription || '');
   const [category,setCategory] = useState(assignedCategory || '');
-  const [productProperties,setProductProperties] = useState(assignedProperties || "");
+  const [productProperties, setProductProperties] = useState(assignedProperties ? assignedProperties : {});
   const [price,setPrice] = useState(existingPrice || '');
   const [images,setImages] = useState(existingImages || []);
   const [goToProducts,setGoToProducts] = useState(false);
@@ -64,14 +64,14 @@ export default function ProductForm({
   function updateImagesOrder(images) {
     setImages(images);
   }
-  function setProductProp(propName,value) {
-    setProductProperties(prev => {
-      const newProductProps = {...prev};
-      newProductProps[propName] = value;
-      return newProductProps;
+  function setProductProp(propName, value) {
+    setProductProperties((prev) => {
+      return {
+        ...prev,
+        [propName]: value,
+      };
     });
   }
-
   const propertiesToFill = [];
   if (categories.length > 0 && category) {
     let catInfo = categories.find(({_id}) => _id === category);
@@ -100,7 +100,7 @@ export default function ProductForm({
           ))}
         </select>
         {propertiesToFill.length > 0 && propertiesToFill.map(p => (
-          <div key={p.name} className="">
+          <div key={p.name} className=""><div/>
             <label>{p.name[0].toUpperCase()+p.name.substring(1)}</label>
             <div>
               <select value={productProperties[p.name]}
